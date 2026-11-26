@@ -1,0 +1,506 @@
+@import "tailwindcss";
+@import "@fontsource-variable/alexandria"; /* خط الإسكندرية (Alexandria) مستضاف محلياً */
+
+/* ==========================================================================
+   Local Stay — ملف التنسيق الوحيد
+   كل الألوان والخط والزوايا والظلال والحركة تُعرَّف هنا فقط.
+   لا تُكتب قيم ثابتة في أي ملف آخر.
+   ========================================================================== */
+
+@theme {
+  /* ---- الألوان الأساسية (القسم 2-أ) ---- */
+  --color-olive: #4a5e3b;
+  --color-terracotta: #c5653d;
+  --color-cream: #f6e8d6;
+  --color-ink: #2e3e28;
+
+  /* ---- لون مشتق: سطح البطاقات (مزج من البيج) ---- */
+  --color-surface: color-mix(in srgb, var(--color-cream) 45%, white);
+
+  /* ---- الخط ---- */
+  --font-sans: "Alexandria Variable", ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- الزوايا (القسم 3-ج) ---- */
+  --radius-md: 0.75rem; /* 12px: الأزرار والحقول */
+  --radius-lg: 1rem; /* 16px: البطاقات */
+  --radius-xl: 1.5rem; /* 24px: الأقسام الكبيرة وواجهات الصور */
+
+  /* ---- الظلال: خفيفة وبلون النص الأخضر ---- */
+  --shadow-soft: 0 2px 10px color-mix(in srgb, var(--color-ink) 10%, transparent);
+  --shadow-lift: 0 8px 24px color-mix(in srgb, var(--color-ink) 16%, transparent);
+
+  /* ---- الحركة (القسم 3-د) ---- */
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: var(--ease-soft);
+
+  --animate-page-enter: page-enter 400ms var(--ease-soft) both;
+  --animate-rise: rise-in 700ms var(--ease-soft) both;
+  --animate-drift: drift 7s ease-in-out infinite;
+  --animate-drift-soft: drift-soft 9s ease-in-out infinite;
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(1.15rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-0.7rem);
+    }
+  }
+
+  @keyframes drift-soft {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(0.6rem, 0.85rem, 0) scale(1.08);
+    }
+  }
+}
+
+/* ==========================================================================
+   الأساس
+   ========================================================================== */
+@layer base {
+  html {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-olive);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  a {
+    transition-property: color;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-terracotta) 30%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-terracotta);
+    outline-offset: 2px;
+  }
+}
+
+/* ==========================================================================
+   المكونات المعتمدة (القسم 3-هـ)
+   ========================================================================== */
+@layer components {
+  /* ---- حاوية الصفحة والأقسام ---- */
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-block {
+    @apply py-10 sm:py-14 lg:py-20;
+  }
+
+  /* ---- حركة دخول الصفحة (على الحاوية الرئيسية فقط) ---- */
+  .page-enter {
+    @apply animate-page-enter;
+  }
+
+  /* ---- الأزرار ---- */
+  .btn-primary,
+  .btn-accent,
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition sm:text-base;
+    @apply cursor-pointer select-none;
+    @apply hover:-translate-y-0.5 active:translate-y-0;
+    @apply disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0;
+  }
+
+  .btn-primary {
+    @apply bg-olive text-cream shadow-soft;
+    @apply hover:bg-olive/90 hover:shadow-lift;
+  }
+
+  .btn-accent {
+    @apply bg-terracotta text-cream shadow-soft;
+    @apply hover:bg-terracotta/90 hover:shadow-lift;
+  }
+
+  .btn-outline {
+    @apply border-2 border-olive bg-transparent text-olive;
+    @apply hover:bg-olive hover:text-cream;
+  }
+
+  /* ---- البطاقة ---- */
+  .card {
+    @apply rounded-lg border border-olive/10 bg-surface p-4 shadow-soft transition sm:p-5;
+    @apply hover:shadow-lift;
+  }
+
+  /* ---- حقل الإدخال ---- */
+  .input {
+    @apply w-full rounded-md border border-olive/30 bg-surface px-4 py-2.5 text-ink transition;
+    @apply placeholder:text-ink/50;
+    @apply hover:border-olive/60 focus:border-olive focus:outline-none focus:ring-2 focus:ring-terracotta/40;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  textarea.input {
+    min-height: 10rem;
+    resize: vertical;
+  }
+
+  .input[aria-invalid="true"] {
+    @apply border-terracotta focus:ring-terracotta/40;
+  }
+
+  /* ---- الشارة ---- */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full bg-terracotta/15 px-3 py-1 text-xs font-semibold text-terracotta;
+  }
+
+  /* ======================================================================
+     عناصر هيكل الموقع (الترويسة والتذييل)
+     ====================================================================== */
+  .site-header {
+    @apply sticky top-0 z-40 border-b border-olive/10 bg-cream/95 backdrop-blur;
+  }
+
+  .site-header-row {
+    @apply flex h-24 items-center justify-between gap-4;
+  }
+
+  .site-logo {
+    @apply inline-flex items-center;
+  }
+
+  .site-logo-image {
+    height: 5.25rem;
+    width: auto;
+  }
+
+  .nav-desktop {
+    @apply hidden items-center gap-1 lg:flex;
+  }
+
+  .nav-link {
+    @apply rounded-md px-3 py-2 text-sm font-medium text-ink transition xl:text-base;
+    @apply hover:bg-olive/10 hover:text-olive;
+  }
+
+  .nav-link[aria-current="page"] {
+    @apply bg-olive/10 text-olive;
+  }
+
+  .menu-toggle {
+    @apply inline-flex size-10 cursor-pointer items-center justify-center rounded-md border border-olive/30 text-olive transition lg:hidden;
+    @apply hover:bg-olive/10;
+  }
+
+  .mobile-panel {
+    @apply border-t border-olive/10 bg-cream lg:hidden;
+  }
+
+  .mobile-nav {
+    @apply flex flex-col gap-1 py-4;
+  }
+
+  .mobile-nav .nav-link {
+    @apply block text-base;
+  }
+
+  .site-footer {
+    @apply mt-auto bg-olive text-cream;
+  }
+
+  .footer-logo {
+    @apply mb-3 inline-flex rounded-lg bg-cream px-3 py-2;
+  }
+
+  .footer-logo-image {
+    height: 4.5rem;
+    width: auto;
+  }
+
+  .footer-heading {
+    @apply mb-3 text-base font-bold text-cream;
+  }
+
+  .footer-link {
+    @apply text-sm text-cream/80 transition hover:text-cream;
+  }
+
+  .footer-bottom {
+    @apply border-t border-cream/20 py-4 text-center text-sm text-cream/70;
+  }
+
+  /* ======================================================================
+     الصفحة الرئيسية
+     ====================================================================== */
+  .home {
+    background-image:
+      radial-gradient(ellipse 55% 40% at 100% 0%, color-mix(in srgb, var(--color-terracotta) 16%, transparent), transparent 70%),
+      radial-gradient(ellipse 45% 35% at 0% 28%, color-mix(in srgb, var(--color-olive) 14%, transparent), transparent 72%);
+  }
+
+  .reveal {
+    @apply animate-rise;
+  }
+
+  .reveal-1 {
+    animation-delay: 90ms;
+  }
+
+  .reveal-2 {
+    animation-delay: 180ms;
+  }
+
+  .reveal-3 {
+    animation-delay: 270ms;
+  }
+
+  .reveal-4 {
+    animation-delay: 360ms;
+  }
+
+  .reveal-stagger > :nth-child(1) {
+    animation-delay: 80ms;
+  }
+
+  .reveal-stagger > :nth-child(2) {
+    animation-delay: 180ms;
+  }
+
+  .reveal-stagger > :nth-child(3) {
+    animation-delay: 280ms;
+  }
+
+  .reveal-stagger > :nth-child(4) {
+    animation-delay: 380ms;
+  }
+
+  .hero {
+    @apply relative grid items-center gap-10 overflow-hidden rounded-xl border border-olive/10 px-6 py-10 shadow-lift;
+    @apply sm:px-10 sm:py-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12 lg:px-14 lg:py-16;
+    background-color: var(--color-surface);
+    background-image:
+      radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--color-terracotta) 22%, transparent), transparent 34%),
+      radial-gradient(circle at 8% 90%, color-mix(in srgb, var(--color-olive) 18%, transparent), transparent 36%),
+      radial-gradient(circle, color-mix(in srgb, var(--color-olive) 10%, transparent) 1.25px, transparent 1.25px);
+    background-size: auto, auto, 1.35rem 1.35rem;
+  }
+
+  .hero-orb {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+  }
+
+  .hero-orb-a {
+    @apply animate-drift-soft bg-terracotta/25;
+    top: -4rem;
+    inset-inline-end: -3rem;
+    width: 16rem;
+    height: 16rem;
+  }
+
+  .hero-orb-b {
+    @apply animate-drift bg-olive/20;
+    bottom: -5rem;
+    inset-inline-start: -4rem;
+    width: 18rem;
+    height: 18rem;
+    animation-delay: -3s;
+  }
+
+  .hero-copy {
+    @apply relative z-10 flex flex-col items-center gap-5 text-center lg:items-start lg:text-start;
+  }
+
+  .hero-pills {
+    @apply flex flex-wrap justify-center gap-2 lg:justify-start;
+  }
+
+  .hero-pill {
+    @apply rounded-full border border-olive/15 bg-cream/80 px-3 py-1 text-sm font-medium text-olive backdrop-blur-sm;
+  }
+
+  .hero-stage {
+    @apply relative z-10 hidden min-h-72 sm:block;
+  }
+
+  .hero-tile {
+    @apply absolute flex items-center gap-3 rounded-xl border border-olive/10 bg-surface/90 px-4 py-3 text-olive shadow-lift backdrop-blur-sm;
+    @apply animate-drift;
+  }
+
+  .hero-tile-icon {
+    @apply flex size-11 items-center justify-center rounded-lg bg-olive/10;
+  }
+
+  .hero-tile-copy strong {
+    @apply block text-sm text-olive;
+  }
+
+  .hero-tile-copy span {
+    @apply block text-xs font-medium text-ink/70;
+  }
+
+  .hero-tile-1 {
+    top: 6%;
+    inset-inline-start: 6%;
+  }
+
+  .hero-tile-2 {
+    top: 38%;
+    inset-inline-end: 0;
+    animation-delay: -2.2s;
+  }
+
+  .hero-tile-3 {
+    bottom: 6%;
+    inset-inline-start: 16%;
+    animation-delay: -4.4s;
+  }
+
+  .section-kicker {
+    @apply text-sm font-semibold text-terracotta;
+  }
+
+  .media-frame {
+    @apply relative aspect-4/3 w-full overflow-hidden rounded-md bg-olive/10;
+  }
+
+  .media-placeholder {
+    @apply flex size-full items-center justify-center text-olive/40;
+  }
+
+  .category-card {
+    @apply h-full hover:-translate-y-1.5;
+  }
+
+  .category-card .media-photo,
+  .category-card .media-icon {
+    transition: transform 500ms var(--ease-soft);
+  }
+
+  .category-card:hover .media-photo,
+  .category-card:hover .media-icon {
+    transform: scale(1.07);
+  }
+
+  .feature-panel {
+    @apply relative grid gap-8 overflow-hidden rounded-xl border border-olive/10 p-6 sm:p-10 lg:grid-cols-2 lg:items-center lg:gap-12;
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-olive) 9%, var(--color-surface)),
+      color-mix(in srgb, var(--color-terracotta) 10%, var(--color-surface))
+    );
+  }
+
+  .step-list {
+    @apply relative flex flex-col gap-4;
+  }
+
+  .step-item {
+    @apply animate-rise relative flex items-stretch gap-3;
+  }
+
+  .step-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: calc(1.25rem - 1px);
+    top: 2.75rem;
+    bottom: -1rem;
+    width: 2px;
+    background: color-mix(in srgb, var(--color-olive) 22%, transparent);
+  }
+
+  .step-number {
+    @apply relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full bg-terracotta text-lg font-bold text-cream shadow-soft;
+  }
+
+  .step-card {
+    @apply flex-1 transition hover:-translate-y-0.5;
+  }
+
+  /* ======================================================================
+     صفحات من نحن واتصل بنا
+     ====================================================================== */
+  .page-banner {
+    @apply relative flex flex-col items-start gap-4 overflow-hidden rounded-xl border border-olive/10 px-6 py-10 shadow-lift;
+    @apply sm:px-10 sm:py-12 lg:px-14 lg:py-16;
+    background-color: var(--color-surface);
+    background-image:
+      radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--color-terracotta) 20%, transparent), transparent 36%),
+      radial-gradient(circle at 0% 100%, color-mix(in srgb, var(--color-olive) 16%, transparent), transparent 34%);
+  }
+
+  .info-card {
+    @apply h-full hover:-translate-y-1;
+  }
+
+  .contact-layout {
+    @apply grid items-start gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-12;
+  }
+
+  .field-error {
+    @apply text-sm font-medium text-terracotta;
+  }
+
+  .message-success {
+    @apply flex flex-col items-start gap-4 rounded-xl border border-olive/10 bg-surface p-6 shadow-lift sm:p-8;
+  }
+
+  /* ---- مساعدات صفحة العرض التجريبية ---- */
+  .swatch {
+    @apply h-16 w-full rounded-md border border-olive/10;
+  }
+}
+
+/* ==========================================================================
+   إمكانية الوصول: احترام تفضيل تقليل الحركة
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
